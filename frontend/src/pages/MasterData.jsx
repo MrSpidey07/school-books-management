@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Plus, Edit, Trash2, Database } from "lucide-react";
 import {
   useBoardStore,
   useMediumStore,
@@ -52,6 +53,8 @@ function MasterData() {
 
   useEffect(() => {
     loadData();
+    setFormData({});
+    setEditId(null);
   }, [activeTab]);
 
   const loadData = () => {
@@ -124,10 +127,11 @@ function MasterData() {
   const handleEdit = (item) => {
     setEditId(item._id);
     setFormData(item);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this item?")) {
+  const handleDelete = async (id, name) => {
+    if (window.confirm(`Are you sure you want to delete "${name}"?`)) {
       try {
         switch (activeTab) {
           case "boards":
@@ -156,9 +160,9 @@ function MasterData() {
     if (activeTab === "books") {
       return (
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Book Name
+          <div className="form-control w-full">
+            <label className="label">
+              <span className="label-text">Book Name *</span>
             </label>
             <input
               type="text"
@@ -167,12 +171,13 @@ function MasterData() {
                 setFormData({ ...formData, book_name: e.target.value })
               }
               required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="input input-bordered"
+              placeholder="Enter book name"
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Subject
+          <div className="form-control w-full">
+            <label className="label">
+              <span className="label-text">Subject *</span>
             </label>
             <input
               type="text"
@@ -181,12 +186,13 @@ function MasterData() {
                 setFormData({ ...formData, subject: e.target.value })
               }
               required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="input input-bordered"
+              placeholder="Enter subject"
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Publisher
+          <div className="form-control w-full">
+            <label className="label">
+              <span className="label-text">Publisher *</span>
             </label>
             <input
               type="text"
@@ -195,65 +201,75 @@ function MasterData() {
                 setFormData({ ...formData, publisher: e.target.value })
               }
               required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="input input-bordered"
+              placeholder="Enter publisher"
             />
           </div>
-          <button
-            type="submit"
-            className="inline-flex justify-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700"
-          >
-            {editId ? "Update" : "Add"} Book
-          </button>
-          {editId && (
+          <div className="flex gap-2">
             <button
-              type="button"
-              onClick={() => {
-                setEditId(null);
-                setFormData({});
-              }}
-              className="ml-2 inline-flex justify-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
+              type="submit"
+              className="btn bg-blue-600 hover:bg-blue-700 text-white border-0 shadow-md"
             >
-              Cancel
+              <Plus size={18} />
+              {editId ? "Update" : "Add"} Book
             </button>
-          )}
+            {editId && (
+              <button
+                type="button"
+                onClick={() => {
+                  setEditId(null);
+                  setFormData({});
+                }}
+                className="btn bg-gray-200 hover:bg-gray-300 text-gray-700 border-0"
+              >
+                Cancel
+              </button>
+            )}
+          </div>
         </form>
       );
     } else {
       const fieldName = activeTab === "years" ? "year" : "name";
       const label = activeTab === "years" ? "Year" : "Name";
+      const placeholder =
+        activeTab === "years" ? "e.g., 2024-2025" : "Enter name";
 
       return (
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              {label}
+          <div className="form-control w-full">
+            <label className="label">
+              <span className="label-text">{label} *</span>
             </label>
             <input
               type="text"
               value={formData[fieldName] || ""}
               onChange={(e) => setFormData({ [fieldName]: e.target.value })}
               required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="input input-bordered"
+              placeholder={placeholder}
             />
           </div>
-          <button
-            type="submit"
-            className="inline-flex justify-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700"
-          >
-            {editId ? "Update" : "Add"}
-          </button>
-          {editId && (
+          <div className="flex gap-2">
             <button
-              type="button"
-              onClick={() => {
-                setEditId(null);
-                setFormData({});
-              }}
-              className="ml-2 inline-flex justify-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
+              type="submit"
+              className="btn bg-blue-600 hover:bg-blue-700 text-white border-0 shadow-md"
             >
-              Cancel
+              <Plus size={18} />
+              {editId ? "Update" : "Add"}
             </button>
-          )}
+            {editId && (
+              <button
+                type="button"
+                onClick={() => {
+                  setEditId(null);
+                  setFormData({});
+                }}
+                className="btn bg-gray-200 hover:bg-gray-300 text-gray-700 border-0"
+              >
+                Cancel
+              </button>
+            )}
+          </div>
         </form>
       );
     }
@@ -279,66 +295,79 @@ function MasterData() {
         break;
     }
 
+    if (data.length === 0) {
+      return (
+        <div className="text-center py-12">
+          <Database size={48} className="mx-auto mb-4 text-base-content/30" />
+          <p className="text-lg text-base-content/60">No data found</p>
+          <p className="text-sm text-base-content/40 mt-2">
+            Add your first entry using the form above
+          </p>
+        </div>
+      );
+    }
+
     return (
-      <div className="mt-6 overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-        <table className="min-w-full divide-y divide-gray-300">
-          <thead className="bg-gray-50">
+      <div className="overflow-x-auto">
+        <table className="table table-zebra">
+          <thead>
             <tr>
               {activeTab === "books" ? (
                 <>
-                  <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                    Book Name
-                  </th>
-                  <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                    Subject
-                  </th>
-                  <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                    Publisher
-                  </th>
+                  <th>Book Name</th>
+                  <th>Subject</th>
+                  <th>Publisher</th>
                 </>
               ) : (
-                <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                  {activeTab === "years" ? "Year" : "Name"}
-                </th>
+                <th>{activeTab === "years" ? "Year" : "Name"}</th>
               )}
-              <th className="relative py-3.5 pl-3 pr-4 sm:pr-6">
-                <span className="sr-only">Actions</span>
-              </th>
+              <th>Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200 bg-white">
+          <tbody>
             {data.map((item) => (
               <tr key={item._id}>
                 {activeTab === "books" ? (
                   <>
-                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
-                      {item.book_name}
+                    <td>
+                      <div className="font-bold">{item.book_name}</div>
                     </td>
-                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                      {item.subject}
+                    <td>
+                      <div className="badge badge-outline">{item.subject}</div>
                     </td>
-                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                      {item.publisher}
-                    </td>
+                    <td>{item.publisher}</td>
                   </>
                 ) : (
-                  <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
-                    {activeTab === "years" ? item.year : item.name}
+                  <td>
+                    <div className="font-bold">
+                      {activeTab === "years" ? item.year : item.name}
+                    </div>
                   </td>
                 )}
-                <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                  <button
-                    onClick={() => handleEdit(item)}
-                    className="text-blue-600 hover:text-blue-900 mr-4"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(item._id)}
-                    className="text-red-600 hover:text-red-900"
-                  >
-                    Delete
-                  </button>
+                <td>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleEdit(item)}
+                      className="btn btn-sm bg-blue-600 hover:bg-blue-700 text-white border-0"
+                    >
+                      <Edit size={16} />
+                    </button>
+                    <button
+                      onClick={() =>
+                        handleDelete(
+                          item._id,
+                          activeTab === "books"
+                            ? item.book_name
+                            : activeTab === "years"
+                            ? item.year
+                            : item.name
+                        )
+                      }
+                      className="btn btn-sm bg-red-500 hover:bg-red-600 text-white border-0"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -349,71 +378,80 @@ function MasterData() {
   };
 
   return (
-    <div className="px-4 sm:px-6 lg:px-8">
-      <h1 className="text-2xl font-semibold text-gray-900">Master Data</h1>
-
-      <div className="mt-6">
-        <div className="border-b border-gray-200">
-          <nav className="-mb-px flex space-x-8">
-            <button
-              onClick={() => setActiveTab("boards")}
-              className={`${
-                activeTab === "boards"
-                  ? "border-blue-500 text-blue-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-              } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
-            >
-              Boards
-            </button>
-            <button
-              onClick={() => setActiveTab("mediums")}
-              className={`${
-                activeTab === "mediums"
-                  ? "border-blue-500 text-blue-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-              } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
-            >
-              Mediums
-            </button>
-            <button
-              onClick={() => setActiveTab("classes")}
-              className={`${
-                activeTab === "classes"
-                  ? "border-blue-500 text-blue-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-              } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
-            >
-              Classes
-            </button>
-            <button
-              onClick={() => setActiveTab("years")}
-              className={`${
-                activeTab === "years"
-                  ? "border-blue-500 text-blue-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-              } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
-            >
-              Academic Years
-            </button>
-            <button
-              onClick={() => setActiveTab("books")}
-              className={`${
-                activeTab === "books"
-                  ? "border-blue-500 text-blue-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-              } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
-            >
-              Books
-            </button>
-          </nav>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="card bg-base-100 shadow-xl">
+        <div className="card-body">
+          <h1 className="card-title text-2xl sm:text-3xl">
+            <Database className="mr-2" />
+            Master Data
+          </h1>
+          <p className="text-base-content/60 mt-2 text-sm sm:text-base">
+            Manage boards, mediums, classes, academic years, and books
+          </p>
         </div>
       </div>
 
-      <div className="mt-6 bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl p-6">
-        {renderForm()}
+      {/* Tabs */}
+      <div className="tabs tabs-boxed bg-base-100 shadow-xl p-2 overflow-x-auto flex-nowrap">
+        <button
+          onClick={() => setActiveTab("boards")}
+          className={`tab flex-shrink-0 ${
+            activeTab === "boards" ? "tab-active !text-white" : ""
+          }`}
+        >
+          Boards
+        </button>
+        <button
+          onClick={() => setActiveTab("mediums")}
+          className={`tab flex-shrink-0 ${
+            activeTab === "mediums" ? "tab-active !text-white" : ""
+          }`}
+        >
+          Mediums
+        </button>
+        <button
+          onClick={() => setActiveTab("classes")}
+          className={`tab flex-shrink-0 ${
+            activeTab === "classes" ? "tab-active !text-white" : ""
+          }`}
+        >
+          Classes
+        </button>
+        <button
+          onClick={() => setActiveTab("years")}
+          className={`tab flex-shrink-0 ${
+            activeTab === "years" ? "tab-active !text-white" : ""
+          }`}
+        >
+          <span className="hidden sm:inline">Academic Years</span>
+          <span className="sm:hidden">Years</span>
+        </button>
+        <button
+          onClick={() => setActiveTab("books")}
+          className={`tab flex-shrink-0 ${
+            activeTab === "books" ? "tab-active !text-white" : ""
+          }`}
+        >
+          Books
+        </button>
       </div>
 
-      {renderList()}
+      {/* Form */}
+      <div className="card bg-base-100 shadow-xl">
+        <div className="card-body">
+          <h2 className="card-title">
+            {editId ? "Edit" : "Add New"}{" "}
+            {activeTab.charAt(0).toUpperCase() + activeTab.slice(1, -1)}
+          </h2>
+          {renderForm()}
+        </div>
+      </div>
+
+      {/* List */}
+      <div className="card bg-base-100 shadow-xl">
+        <div className="card-body">{renderList()}</div>
+      </div>
     </div>
   );
 }

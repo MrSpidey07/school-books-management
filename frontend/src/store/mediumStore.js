@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import toast from "react-hot-toast";
 import axiosInstance from "../lib/axios";
 
 export const useMediumStore = create((set) => ({
@@ -20,9 +21,11 @@ export const useMediumStore = create((set) => ({
     try {
       const response = await axiosInstance.post("/mediums", data);
       set((state) => ({ mediums: [...state.mediums, response.data] }));
+      toast.success("Medium created successfully!");
       return response.data;
     } catch (error) {
       set({ error: error.message });
+      toast.error("Failed to create medium");
       throw error;
     }
   },
@@ -35,9 +38,11 @@ export const useMediumStore = create((set) => ({
           medium._id === id ? response.data : medium
         ),
       }));
+      toast.success("Medium updated successfully!");
       return response.data;
     } catch (error) {
       set({ error: error.message });
+      toast.error("Failed to update medium");
       throw error;
     }
   },
@@ -48,8 +53,10 @@ export const useMediumStore = create((set) => ({
       set((state) => ({
         mediums: state.mediums.filter((medium) => medium._id !== id),
       }));
+      toast.success("Medium deleted successfully!");
     } catch (error) {
       set({ error: error.message });
+      toast.error("Failed to delete medium");
       throw error;
     }
   },

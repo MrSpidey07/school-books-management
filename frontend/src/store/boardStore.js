@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import toast from "react-hot-toast";
 import axiosInstance from "../lib/axios";
 
 export const useBoardStore = create((set) => ({
@@ -20,9 +21,11 @@ export const useBoardStore = create((set) => ({
     try {
       const response = await axiosInstance.post("/boards", data);
       set((state) => ({ boards: [...state.boards, response.data] }));
+      toast.success("Board created successfully!");
       return response.data;
     } catch (error) {
       set({ error: error.message });
+      toast.error("Failed to create board");
       throw error;
     }
   },
@@ -35,9 +38,11 @@ export const useBoardStore = create((set) => ({
           board._id === id ? response.data : board
         ),
       }));
+      toast.success("Board updated successfully!");
       return response.data;
     } catch (error) {
       set({ error: error.message });
+      toast.error("Failed to update board");
       throw error;
     }
   },
@@ -48,8 +53,10 @@ export const useBoardStore = create((set) => ({
       set((state) => ({
         boards: state.boards.filter((board) => board._id !== id),
       }));
+      toast.success("Board deleted successfully!");
     } catch (error) {
       set({ error: error.message });
+      toast.error("Failed to delete board");
       throw error;
     }
   },

@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import toast from "react-hot-toast";
 import axiosInstance from "../lib/axios";
 
 export const useBookStore = create((set) => ({
@@ -20,9 +21,11 @@ export const useBookStore = create((set) => ({
     try {
       const response = await axiosInstance.post("/books", data);
       set((state) => ({ books: [...state.books, response.data] }));
+      toast.success("Book created successfully!");
       return response.data;
     } catch (error) {
       set({ error: error.message });
+      toast.error("Failed to create book");
       throw error;
     }
   },
@@ -35,9 +38,11 @@ export const useBookStore = create((set) => ({
           book._id === id ? response.data : book
         ),
       }));
+      toast.success("Book updated successfully!");
       return response.data;
     } catch (error) {
       set({ error: error.message });
+      toast.error("Failed to update book");
       throw error;
     }
   },
@@ -48,8 +53,10 @@ export const useBookStore = create((set) => ({
       set((state) => ({
         books: state.books.filter((book) => book._id !== id),
       }));
+      toast.success("Book deleted successfully!");
     } catch (error) {
       set({ error: error.message });
+      toast.error("Failed to delete book");
       throw error;
     }
   },

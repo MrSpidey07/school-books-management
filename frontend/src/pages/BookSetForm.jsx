@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { ArrowLeft, Save, BookPlus } from "lucide-react";
 import {
   useBoardStore,
   useMediumStore,
@@ -125,29 +126,50 @@ function BookSetForm() {
   };
 
   return (
-    <div className="px-4 sm:px-6 lg:px-8">
-      <div className="md:flex md:items-center md:justify-between">
-        <div className="flex-1 min-w-0">
-          <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
-            {id ? "Edit Book Set" : "Create Book Set"}
-          </h2>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="card bg-base-100 shadow-xl">
+        <div className="card-body">
+          <div className="flex items-start sm:items-center gap-3 sm:gap-4">
+            <button
+              onClick={() => navigate("/")}
+              className="btn btn-circle bg-gray-200 hover:bg-gray-300 text-gray-700 border-0"
+            >
+              <ArrowLeft size={20} />
+            </button>
+            <div>
+              <h1 className="card-title text-xl sm:text-3xl">
+                <BookPlus className="mr-2" />
+                {id ? "Edit Book Set" : "Create Book Set"}
+              </h1>
+              <p className="text-base-content/60 mt-2 text-sm sm:text-base">
+                {id
+                  ? "Update the book set details"
+                  : "Create a new book set with selected books"}
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="mt-8 space-y-6">
-        <div className="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl">
-          <div className="px-4 py-6 sm:p-8">
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Board
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Basic Information */}
+        <div className="card bg-base-100 shadow-xl">
+          <div className="card-body">
+            <h2 className="card-title text-lg sm:text-xl mb-4">
+              Basic Information
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="form-control w-full">
+                <label className="label">
+                  <span className="label-text">Board *</span>
                 </label>
                 <select
                   name="board_id"
                   value={formData.board_id}
                   onChange={handleChange}
                   required
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className="select select-bordered"
                 >
                   <option value="">Select Board</option>
                   {boards.map((board) => (
@@ -158,16 +180,16 @@ function BookSetForm() {
                 </select>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Medium
+              <div className="form-control w-full">
+                <label className="label">
+                  <span className="label-text">Medium *</span>
                 </label>
                 <select
                   name="medium_id"
                   value={formData.medium_id}
                   onChange={handleChange}
                   required
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className="select select-bordered"
                 >
                   <option value="">Select Medium</option>
                   {mediums.map((medium) => (
@@ -178,16 +200,16 @@ function BookSetForm() {
                 </select>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Class
+              <div className="form-control w-full">
+                <label className="label">
+                  <span className="label-text">Class *</span>
                 </label>
                 <select
                   name="class_id"
                   value={formData.class_id}
                   onChange={handleChange}
                   required
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className="select select-bordered"
                 >
                   <option value="">Select Class</option>
                   {classes.map((cls) => (
@@ -198,16 +220,16 @@ function BookSetForm() {
                 </select>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Academic Year
+              <div className="form-control w-full">
+                <label className="label">
+                  <span className="label-text">Academic Year *</span>
                 </label>
                 <select
                   name="year_id"
                   value={formData.year_id}
                   onChange={handleChange}
                   required
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className="select select-bordered"
                 >
                   <option value="">Select Year</option>
                   {academicYears.map((year) => (
@@ -218,9 +240,9 @@ function BookSetForm() {
                 </select>
               </div>
 
-              <div className="sm:col-span-2">
-                <label className="block text-sm font-medium text-gray-700">
-                  Set Name
+              <div className="form-control w-full md:col-span-2">
+                <label className="label">
+                  <span className="label-text">Set Name *</span>
                 </label>
                 <input
                   type="text"
@@ -228,77 +250,109 @@ function BookSetForm() {
                   value={formData.set_name}
                   onChange={handleChange}
                   required
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className="input input-bordered"
+                  placeholder="e.g., Class 3 English Medium Set"
                 />
               </div>
             </div>
+          </div>
+        </div>
 
-            <div className="mt-6">
-              <label className="block text-sm font-medium text-gray-700 mb-3">
-                Select Books
-              </label>
-              <div className="space-y-2">
-                {allBooks.map((book) => {
-                  const selectedBook = formData.books.find(
-                    (b) => b.book_id === book._id
-                  );
-                  const isSelected = !!selectedBook;
-
-                  return (
-                    <div
-                      key={book._id}
-                      className="flex items-center space-x-4 p-3 border rounded-md"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={() => handleBookToggle(book._id)}
-                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                      />
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-gray-900">
-                          {book.book_name}
-                        </p>
-                        <p className="text-sm text-gray-500">
-                          {book.subject} - {book.publisher}
-                        </p>
-                      </div>
-                      {isSelected && (
-                        <div className="flex items-center space-x-2">
-                          <label className="text-sm text-gray-700">Qty:</label>
-                          <input
-                            type="number"
-                            min="1"
-                            value={selectedBook.quantity}
-                            onChange={(e) =>
-                              handleQuantityChange(book._id, e.target.value)
-                            }
-                            className="w-20 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                          />
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
+        {/* Books Selection */}
+        <div className="card bg-base-100 shadow-xl">
+          <div className="card-body">
+            <h2 className="card-title text-xl mb-4">
+              Select Books
+              <div className="badge badge-primary">
+                {formData.books.length} selected
               </div>
+            </h2>
+            <div className="space-y-3 max-h-96 overflow-y-auto">
+              {allBooks.map((book) => {
+                const selectedBook = formData.books.find(
+                  (b) => b.book_id === book._id
+                );
+                const isSelected = !!selectedBook;
+
+                return (
+                  <div
+                    key={book._id}
+                    className={`card ${
+                      isSelected
+                        ? "bg-primary/10 border-primary"
+                        : "bg-base-200"
+                    } border-2`}
+                  >
+                    <div className="card-body p-4">
+                      <div className="flex items-center gap-4">
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => handleBookToggle(book._id)}
+                          className="checkbox checkbox-primary"
+                        />
+                        <div className="flex-1">
+                          <h3 className="font-bold">{book.book_name}</h3>
+                          <p className="text-sm text-base-content/60">
+                            {book.subject} • {book.publisher}
+                          </p>
+                        </div>
+                        {isSelected && (
+                          <div className="form-control w-24">
+                            <label className="label py-0">
+                              <span className="label-text-alt">Quantity</span>
+                            </label>
+                            <input
+                              type="number"
+                              min="1"
+                              value={selectedBook.quantity}
+                              onChange={(e) =>
+                                handleQuantityChange(book._id, e.target.value)
+                              }
+                              className="input input-bordered input-sm"
+                            />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
+        </div>
 
-          <div className="flex items-center justify-end gap-x-6 border-t border-gray-900/10 px-4 py-4 sm:px-8">
-            <button
-              type="button"
-              onClick={() => navigate("/")}
-              className="text-sm font-semibold leading-6 text-gray-900"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={loading}
-              className="rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-50"
-            >
-              {loading ? "Saving..." : "Save"}
-            </button>
+        {/* Actions */}
+        <div className="card bg-base-100 shadow-xl">
+          <div className="card-body">
+            <div className="flex flex-col sm:flex-row justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => navigate("/")}
+                className="btn bg-gray-200 hover:bg-gray-300 text-gray-700 border-0 order-2 sm:order-1"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={loading}
+                className="btn bg-blue-600 hover:bg-blue-700 text-white border-0 shadow-md order-1 sm:order-2"
+              >
+                {loading ? (
+                  <span className="loading loading-spinner loading-sm"></span>
+                ) : (
+                  <>
+                    <Save size={20} />
+                    <span className="hidden sm:inline">
+                      {id ? "Update" : "Create"} Book Set
+                    </span>
+                    <span className="sm:hidden">
+                      {id ? "Update" : "Create"}
+                    </span>
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       </form>

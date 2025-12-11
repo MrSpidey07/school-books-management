@@ -1,36 +1,57 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import { BookOpen, Database } from "lucide-react";
 
 function Layout({ children }) {
+  const location = useLocation();
+
+  const isActive = (path) => {
+    if (path === "/") {
+      return (
+        location.pathname === "/" || location.pathname.startsWith("/book-sets")
+      );
+    }
+    return location.pathname.startsWith(path);
+  };
+
   return (
-    <div className="min-h-screen bg-gray-100">
-      <nav className="bg-white shadow-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex">
-              <div className="flex-shrink-0 flex items-center">
-                <h1 className="text-xl font-bold text-gray-800">
-                  School Book Management
-                </h1>
-              </div>
-              <div className="ml-6 flex space-x-8">
-                <Link
-                  to="/"
-                  className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-900 border-b-2 border-transparent hover:border-gray-300"
-                >
-                  Book Sets
-                </Link>
-                <Link
-                  to="/master-data"
-                  className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-900 border-b-2 border-transparent hover:border-gray-300"
-                >
-                  Master Data
-                </Link>
-              </div>
-            </div>
-          </div>
+    <div className="min-h-screen bg-base-200">
+      <div className="navbar bg-base-100 shadow-lg">
+        <div className="flex-1">
+          <Link
+            to="/"
+            className="btn btn-ghost normal-case text-xl flex items-center"
+          >
+            <BookOpen className="mr-2" size={24} />
+            <span className="hidden sm:inline">School Book Management</span>
+            <span className="sm:hidden">SBM</span>
+          </Link>
         </div>
-      </nav>
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">{children}</main>
+        <div className="flex-none">
+          <ul className="menu menu-horizontal px-2 gap-1">
+            <li>
+              <Link
+                to="/"
+                className={isActive("/") ? "active !text-white" : ""}
+              >
+                <BookOpen size={18} />
+                <span className="hidden md:inline">Book Sets</span>
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/master-data"
+                className={isActive("/master-data") ? "active !text-white" : ""}
+              >
+                <Database size={18} />
+                <span className="hidden md:inline">Master Data</span>
+              </Link>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <main className="container mx-auto py-4 sm:py-6 px-3 sm:px-4">
+        {children}
+      </main>
     </div>
   );
 }

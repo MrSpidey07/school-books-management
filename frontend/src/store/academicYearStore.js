@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import toast from "react-hot-toast";
 import axiosInstance from "../lib/axios";
 
 export const useAcademicYearStore = create((set) => ({
@@ -22,9 +23,11 @@ export const useAcademicYearStore = create((set) => ({
       set((state) => ({
         academicYears: [...state.academicYears, response.data],
       }));
+      toast.success("Academic year created successfully!");
       return response.data;
     } catch (error) {
       set({ error: error.message });
+      toast.error("Failed to create academic year");
       throw error;
     }
   },
@@ -37,9 +40,11 @@ export const useAcademicYearStore = create((set) => ({
           year._id === id ? response.data : year
         ),
       }));
+      toast.success("Academic year updated successfully!");
       return response.data;
     } catch (error) {
       set({ error: error.message });
+      toast.error("Failed to update academic year");
       throw error;
     }
   },
@@ -50,8 +55,10 @@ export const useAcademicYearStore = create((set) => ({
       set((state) => ({
         academicYears: state.academicYears.filter((year) => year._id !== id),
       }));
+      toast.success("Academic year deleted successfully!");
     } catch (error) {
       set({ error: error.message });
+      toast.error("Failed to delete academic year");
       throw error;
     }
   },

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { Plus, Filter, Edit, Trash2, Book } from "lucide-react";
 import {
   useBoardStore,
   useMediumStore,
@@ -52,8 +53,8 @@ function BookSetList() {
     });
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this book set?")) {
+  const handleDelete = async (id, name) => {
+    if (window.confirm(`Are you sure you want to delete "${name}"?`)) {
       try {
         await deleteBookSet(id);
       } catch (error) {
@@ -62,157 +63,221 @@ function BookSetList() {
     }
   };
 
+  const clearFilters = () => {
+    setFilters({});
+  };
+
+  const hasActiveFilters = Object.keys(filters).length > 0;
+
   return (
-    <div className="px-4 sm:px-6 lg:px-8">
-      <div className="sm:flex sm:items-center">
-        <div className="sm:flex-auto">
-          <h1 className="text-2xl font-semibold text-gray-900">Book Sets</h1>
-          <p className="mt-2 text-sm text-gray-700">
-            A list of all book sets with their board, medium, class, and
-            academic year.
-          </p>
-        </div>
-        <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-          <Link
-            to="/book-sets/create"
-            className="inline-flex items-center justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700"
-          >
-            Create Book Set
-          </Link>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="card bg-base-100 shadow-xl">
+        <div className="card-body">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+              <h1 className="card-title text-2xl sm:text-3xl">
+                <Book className="mr-2" />
+                Book Sets
+              </h1>
+              <p className="text-base-content/60 mt-2 text-sm sm:text-base">
+                Manage and organize book sets for different boards, mediums, and
+                classes
+              </p>
+            </div>
+            <Link
+              to="/book-sets/create"
+              className="btn bg-blue-600 hover:bg-blue-700 text-white border-0 shadow-md"
+            >
+              <Plus size={20} />
+              <span className="hidden sm:inline">Create Book Set</span>
+              <span className="sm:hidden">Create</span>
+            </Link>
+          </div>
         </div>
       </div>
 
-      <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-4">
-        <select
-          value={filters.board_id || ""}
-          onChange={(e) => handleFilterChange("board_id", e.target.value)}
-          className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-        >
-          <option value="">All Boards</option>
-          {boards.map((board) => (
-            <option key={board._id} value={board._id}>
-              {board.name}
-            </option>
-          ))}
-        </select>
+      {/* Filters */}
+      <div className="card bg-base-100 shadow-xl">
+        <div className="card-body">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="card-title text-lg">
+              <Filter size={20} />
+              Filters
+            </h2>
+            {hasActiveFilters && (
+              <button
+                onClick={clearFilters}
+                className="btn btn-sm bg-gray-200 hover:bg-gray-300 text-gray-700 border-0"
+              >
+                Clear All
+              </button>
+            )}
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="form-control w-full">
+              <label className="label">
+                <span className="label-text">Board</span>
+              </label>
+              <select
+                value={filters.board_id || ""}
+                onChange={(e) => handleFilterChange("board_id", e.target.value)}
+                className="select select-bordered"
+              >
+                <option value="">All Boards</option>
+                {boards.map((board) => (
+                  <option key={board._id} value={board._id}>
+                    {board.name}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-        <select
-          value={filters.medium_id || ""}
-          onChange={(e) => handleFilterChange("medium_id", e.target.value)}
-          className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-        >
-          <option value="">All Mediums</option>
-          {mediums.map((medium) => (
-            <option key={medium._id} value={medium._id}>
-              {medium.name}
-            </option>
-          ))}
-        </select>
+            <div className="form-control w-full">
+              <label className="label">
+                <span className="label-text">Medium</span>
+              </label>
+              <select
+                value={filters.medium_id || ""}
+                onChange={(e) =>
+                  handleFilterChange("medium_id", e.target.value)
+                }
+                className="select select-bordered"
+              >
+                <option value="">All Mediums</option>
+                {mediums.map((medium) => (
+                  <option key={medium._id} value={medium._id}>
+                    {medium.name}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-        <select
-          value={filters.class_id || ""}
-          onChange={(e) => handleFilterChange("class_id", e.target.value)}
-          className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-        >
-          <option value="">All Classes</option>
-          {classes.map((cls) => (
-            <option key={cls._id} value={cls._id}>
-              {cls.name}
-            </option>
-          ))}
-        </select>
+            <div className="form-control w-full">
+              <label className="label">
+                <span className="label-text">Class</span>
+              </label>
+              <select
+                value={filters.class_id || ""}
+                onChange={(e) => handleFilterChange("class_id", e.target.value)}
+                className="select select-bordered"
+              >
+                <option value="">All Classes</option>
+                {classes.map((cls) => (
+                  <option key={cls._id} value={cls._id}>
+                    {cls.name}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-        <select
-          value={filters.year_id || ""}
-          onChange={(e) => handleFilterChange("year_id", e.target.value)}
-          className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-        >
-          <option value="">All Years</option>
-          {academicYears.map((year) => (
-            <option key={year._id} value={year._id}>
-              {year.year}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {loading ? (
-        <div className="mt-8 text-center">Loading...</div>
-      ) : (
-        <div className="mt-8 flex flex-col">
-          <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
-            <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-              <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-                <table className="min-w-full divide-y divide-gray-300">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                        Set Name
-                      </th>
-                      <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                        Board
-                      </th>
-                      <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                        Medium
-                      </th>
-                      <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                        Class
-                      </th>
-                      <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                        Year
-                      </th>
-                      <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                        Books
-                      </th>
-                      <th className="relative py-3.5 pl-3 pr-4 sm:pr-6">
-                        <span className="sr-only">Actions</span>
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200 bg-white">
-                    {bookSets.map((bookSet) => (
-                      <tr key={bookSet._id}>
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
-                          {bookSet.set_name}
-                        </td>
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                          {bookSet.board_id?.name}
-                        </td>
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                          {bookSet.medium_id?.name}
-                        </td>
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                          {bookSet.class_id?.name}
-                        </td>
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                          {bookSet.year_id?.year}
-                        </td>
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                          {bookSet.books?.length || 0}
-                        </td>
-                        <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                          <Link
-                            to={`/book-sets/edit/${bookSet._id}`}
-                            className="text-blue-600 hover:text-blue-900 mr-4"
-                          >
-                            Edit
-                          </Link>
-                          <button
-                            onClick={() => handleDelete(bookSet._id)}
-                            className="text-red-600 hover:text-red-900"
-                          >
-                            Delete
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+            <div className="form-control w-full">
+              <label className="label">
+                <span className="label-text">Academic Year</span>
+              </label>
+              <select
+                value={filters.year_id || ""}
+                onChange={(e) => handleFilterChange("year_id", e.target.value)}
+                className="select select-bordered"
+              >
+                <option value="">All Years</option>
+                {academicYears.map((year) => (
+                  <option key={year._id} value={year._id}>
+                    {year.year}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
         </div>
-      )}
+      </div>
+
+      {/* Book Sets Table */}
+      <div className="card bg-base-100 shadow-xl">
+        <div className="card-body">
+          {loading ? (
+            <div className="flex justify-center items-center py-12">
+              <span className="loading loading-spinner loading-lg"></span>
+            </div>
+          ) : bookSets.length === 0 ? (
+            <div className="text-center py-12">
+              <Book size={48} className="mx-auto mb-4 text-base-content/30" />
+              <p className="text-lg text-base-content/60">No book sets found</p>
+              <p className="text-sm text-base-content/40 mt-2">
+                Create a new book set to get started
+              </p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="table table-zebra">
+                <thead>
+                  <tr>
+                    <th>Set Name</th>
+                    <th>Board</th>
+                    <th>Medium</th>
+                    <th>Class</th>
+                    <th>Year</th>
+                    <th>Books</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {bookSets.map((bookSet) => (
+                    <tr key={bookSet._id}>
+                      <td>
+                        <div className="font-bold">{bookSet.set_name}</div>
+                      </td>
+                      <td>
+                        <div className="badge badge-outline">
+                          {bookSet.board_id?.name}
+                        </div>
+                      </td>
+                      <td>
+                        <div className="badge badge-outline">
+                          {bookSet.medium_id?.name}
+                        </div>
+                      </td>
+                      <td>
+                        <div className="badge badge-outline">
+                          {bookSet.class_id?.name}
+                        </div>
+                      </td>
+                      <td>
+                        <div className="badge badge-outline">
+                          {bookSet.year_id?.year}
+                        </div>
+                      </td>
+                      <td>
+                        <div className="badge bg-blue-100 text-blue-700 border-blue-200">
+                          {bookSet.books?.length || 0} books
+                        </div>
+                      </td>
+                      <td>
+                        <div className="flex gap-2">
+                          <Link
+                            to={`/book-sets/edit/${bookSet._id}`}
+                            className="btn btn-sm bg-blue-600 hover:bg-blue-700 text-white border-0"
+                          >
+                            <Edit size={16} />
+                          </Link>
+                          <button
+                            onClick={() =>
+                              handleDelete(bookSet._id, bookSet.set_name)
+                            }
+                            className="btn btn-sm bg-red-500 hover:bg-red-600 text-white border-0"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
