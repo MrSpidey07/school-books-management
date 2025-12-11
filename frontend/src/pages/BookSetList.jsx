@@ -1,58 +1,45 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
-  bookSetAPI,
-  boardAPI,
-  mediumAPI,
-  classAPI,
-  academicYearAPI,
-} from "../services/api";
+  useBoardStore,
+  useMediumStore,
+  useClassStore,
+  useAcademicYearStore,
+  useBookSetStore,
+} from "../store";
 
 function BookSetList() {
-  const [bookSets, setBookSets] = useState([]);
-  const [boards, setBoards] = useState([]);
-  const [mediums, setMediums] = useState([]);
-  const [classes, setClasses] = useState([]);
-  const [academicYears, setAcademicYears] = useState([]);
   const [filters, setFilters] = useState({});
-  const [loading, setLoading] = useState(true);
+
+  const boards = useBoardStore((state) => state.boards);
+  const fetchBoards = useBoardStore((state) => state.fetchBoards);
+
+  const mediums = useMediumStore((state) => state.mediums);
+  const fetchMediums = useMediumStore((state) => state.fetchMediums);
+
+  const classes = useClassStore((state) => state.classes);
+  const fetchClasses = useClassStore((state) => state.fetchClasses);
+
+  const academicYears = useAcademicYearStore((state) => state.academicYears);
+  const fetchAcademicYears = useAcademicYearStore(
+    (state) => state.fetchAcademicYears
+  );
+
+  const bookSets = useBookSetStore((state) => state.bookSets);
+  const loading = useBookSetStore((state) => state.loading);
+  const fetchBookSets = useBookSetStore((state) => state.fetchBookSets);
+  const deleteBookSet = useBookSetStore((state) => state.deleteBookSet);
 
   useEffect(() => {
-    loadMasterData();
-  }, []);
+    fetchBoards();
+    fetchMediums();
+    fetchClasses();
+    fetchAcademicYears();
+  }, [fetchBoards, fetchMediums, fetchClasses, fetchAcademicYears]);
 
   useEffect(() => {
-    loadBookSets();
-  }, [filters]);
-
-  const loadMasterData = async () => {
-    try {
-      const [boardsRes, mediumsRes, classesRes, yearsRes] = await Promise.all([
-        boardAPI.getAll(),
-        mediumAPI.getAll(),
-        classAPI.getAll(),
-        academicYearAPI.getAll(),
-      ]);
-      setBoards(boardsRes.data);
-      setMediums(mediumsRes.data);
-      setClasses(classesRes.data);
-      setAcademicYears(yearsRes.data);
-    } catch (error) {
-      console.error("Error loading master data:", error);
-    }
-  };
-
-  const loadBookSets = async () => {
-    try {
-      setLoading(true);
-      const response = await bookSetAPI.getAll(filters);
-      setBookSets(response.data);
-    } catch (error) {
-      console.error("Error loading book sets:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    fetchBookSets(filters);
+  }, [filters, fetchBookSets]);
 
   const handleFilterChange = (key, value) => {
     setFilters((prev) => {
@@ -68,8 +55,7 @@ function BookSetList() {
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this book set?")) {
       try {
-        await bookSetAPI.delete(id);
-        loadBookSets();
+        await deleteBookSet(id);
       } catch (error) {
         console.error("Error deleting book set:", error);
       }

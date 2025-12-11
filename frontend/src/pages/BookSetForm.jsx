@@ -1,23 +1,18 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
-  bookSetAPI,
-  boardAPI,
-  mediumAPI,
-  classAPI,
-  academicYearAPI,
-  bookAPI,
-} from "../services/api";
+  useBoardStore,
+  useMediumStore,
+  useClassStore,
+  useAcademicYearStore,
+  useBookStore,
+  useBookSetStore,
+} from "../store";
 
 function BookSetForm() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [boards, setBoards] = useState([]);
-  const [mediums, setMediums] = useState([]);
-  const [classes, setClasses] = useState([]);
-  const [academicYears, setAcademicYears] = useState([]);
-  const [allBooks, setAllBooks] = useState([]);
   const [formData, setFormData] = useState({
     board_id: "",
     medium_id: "",
@@ -27,37 +22,44 @@ function BookSetForm() {
     books: [],
   });
 
+  const boards = useBoardStore((state) => state.boards);
+  const fetchBoards = useBoardStore((state) => state.fetchBoards);
+
+  const mediums = useMediumStore((state) => state.mediums);
+  const fetchMediums = useMediumStore((state) => state.fetchMediums);
+
+  const classes = useClassStore((state) => state.classes);
+  const fetchClasses = useClassStore((state) => state.fetchClasses);
+
+  const academicYears = useAcademicYearStore((state) => state.academicYears);
+  const fetchAcademicYears = useAcademicYearStore(
+    (state) => state.fetchAcademicYears
+  );
+
+  const allBooks = useBookStore((state) => state.books);
+  const fetchBooks = useBookStore((state) => state.fetchBooks);
+
+  const getBookSetById = useBookSetStore((state) => state.getBookSetById);
+  const createBookSet = useBookSetStore((state) => state.createBookSet);
+  const updateBookSet = useBookSetStore((state) => state.updateBookSet);
+
   useEffect(() => {
-    loadMasterData();
+    fetchBoards();
+    fetchMediums();
+    fetchClasses();
+    fetchAcademicYears();
+    fetchBooks();
+  }, [fetchBoards, fetchMediums, fetchClasses, fetchAcademicYears, fetchBooks]);
+
+  useEffect(() => {
     if (id) {
       loadBookSet();
     }
   }, [id]);
 
-  const loadMasterData = async () => {
-    try {
-      const [boardsRes, mediumsRes, classesRes, yearsRes, booksRes] =
-        await Promise.all([
-          boardAPI.getAll(),
-          mediumAPI.getAll(),
-          classAPI.getAll(),
-          academicYearAPI.getAll(),
-          bookAPI.getAll(),
-        ]);
-      setBoards(boardsRes.data);
-      setMediums(mediumsRes.data);
-      setClasses(classesRes.data);
-      setAcademicYears(yearsRes.data);
-      setAllBooks(booksRes.data);
-    } catch (error) {
-      console.error("Error loading master data:", error);
-    }
-  };
-
   const loadBookSet = async () => {
     try {
-      const response = await bookSetAPI.getById(id);
-      const bookSet = response.data;
+      const bookSet = await getBookSetById(id);
       setFormData({
         board_id: bookSet.board_id._id,
         medium_id: bookSet.medium_id._id,
@@ -110,9 +112,9 @@ function BookSetForm() {
     setLoading(true);
     try {
       if (id) {
-        await bookSetAPI.update(id, formData);
+        await updateBookSet(id, formData);
       } else {
-        await bookSetAPI.create(formData);
+        await createBookSet(formData);
       }
       navigate("/");
     } catch (error) {

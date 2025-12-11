@@ -1,52 +1,76 @@
 import { useState, useEffect } from "react";
 import {
-  boardAPI,
-  mediumAPI,
-  classAPI,
-  academicYearAPI,
-  bookAPI,
-} from "../services/api";
+  useBoardStore,
+  useMediumStore,
+  useClassStore,
+  useAcademicYearStore,
+  useBookStore,
+} from "../store";
 
 function MasterData() {
   const [activeTab, setActiveTab] = useState("boards");
-  const [boards, setBoards] = useState([]);
-  const [mediums, setMediums] = useState([]);
-  const [classes, setClasses] = useState([]);
-  const [academicYears, setAcademicYears] = useState([]);
-  const [books, setBooks] = useState([]);
   const [formData, setFormData] = useState({});
   const [editId, setEditId] = useState(null);
+
+  const boards = useBoardStore((state) => state.boards);
+  const fetchBoards = useBoardStore((state) => state.fetchBoards);
+  const createBoard = useBoardStore((state) => state.createBoard);
+  const updateBoard = useBoardStore((state) => state.updateBoard);
+  const deleteBoard = useBoardStore((state) => state.deleteBoard);
+
+  const mediums = useMediumStore((state) => state.mediums);
+  const fetchMediums = useMediumStore((state) => state.fetchMediums);
+  const createMedium = useMediumStore((state) => state.createMedium);
+  const updateMedium = useMediumStore((state) => state.updateMedium);
+  const deleteMedium = useMediumStore((state) => state.deleteMedium);
+
+  const classes = useClassStore((state) => state.classes);
+  const fetchClasses = useClassStore((state) => state.fetchClasses);
+  const createClass = useClassStore((state) => state.createClass);
+  const updateClass = useClassStore((state) => state.updateClass);
+  const deleteClass = useClassStore((state) => state.deleteClass);
+
+  const academicYears = useAcademicYearStore((state) => state.academicYears);
+  const fetchAcademicYears = useAcademicYearStore(
+    (state) => state.fetchAcademicYears
+  );
+  const createAcademicYear = useAcademicYearStore(
+    (state) => state.createAcademicYear
+  );
+  const updateAcademicYear = useAcademicYearStore(
+    (state) => state.updateAcademicYear
+  );
+  const deleteAcademicYear = useAcademicYearStore(
+    (state) => state.deleteAcademicYear
+  );
+
+  const books = useBookStore((state) => state.books);
+  const fetchBooks = useBookStore((state) => state.fetchBooks);
+  const createBook = useBookStore((state) => state.createBook);
+  const updateBook = useBookStore((state) => state.updateBook);
+  const deleteBook = useBookStore((state) => state.deleteBook);
 
   useEffect(() => {
     loadData();
   }, [activeTab]);
 
-  const loadData = async () => {
-    try {
-      switch (activeTab) {
-        case "boards":
-          const boardsRes = await boardAPI.getAll();
-          setBoards(boardsRes.data);
-          break;
-        case "mediums":
-          const mediumsRes = await mediumAPI.getAll();
-          setMediums(mediumsRes.data);
-          break;
-        case "classes":
-          const classesRes = await classAPI.getAll();
-          setClasses(classesRes.data);
-          break;
-        case "years":
-          const yearsRes = await academicYearAPI.getAll();
-          setAcademicYears(yearsRes.data);
-          break;
-        case "books":
-          const booksRes = await bookAPI.getAll();
-          setBooks(booksRes.data);
-          break;
-      }
-    } catch (error) {
-      console.error("Error loading data:", error);
+  const loadData = () => {
+    switch (activeTab) {
+      case "boards":
+        fetchBoards();
+        break;
+      case "mediums":
+        fetchMediums();
+        break;
+      case "classes":
+        fetchClasses();
+        break;
+      case "years":
+        fetchAcademicYears();
+        break;
+      case "books":
+        fetchBooks();
+        break;
     }
   };
 
@@ -56,43 +80,42 @@ function MasterData() {
       switch (activeTab) {
         case "boards":
           if (editId) {
-            await boardAPI.update(editId, formData);
+            await updateBoard(editId, formData);
           } else {
-            await boardAPI.create(formData);
+            await createBoard(formData);
           }
           break;
         case "mediums":
           if (editId) {
-            await mediumAPI.update(editId, formData);
+            await updateMedium(editId, formData);
           } else {
-            await mediumAPI.create(formData);
+            await createMedium(formData);
           }
           break;
         case "classes":
           if (editId) {
-            await classAPI.update(editId, formData);
+            await updateClass(editId, formData);
           } else {
-            await classAPI.create(formData);
+            await createClass(formData);
           }
           break;
         case "years":
           if (editId) {
-            await academicYearAPI.update(editId, formData);
+            await updateAcademicYear(editId, formData);
           } else {
-            await academicYearAPI.create(formData);
+            await createAcademicYear(formData);
           }
           break;
         case "books":
           if (editId) {
-            await bookAPI.update(editId, formData);
+            await updateBook(editId, formData);
           } else {
-            await bookAPI.create(formData);
+            await createBook(formData);
           }
           break;
       }
       setFormData({});
       setEditId(null);
-      loadData();
     } catch (error) {
       console.error("Error saving data:", error);
     }
@@ -108,22 +131,21 @@ function MasterData() {
       try {
         switch (activeTab) {
           case "boards":
-            await boardAPI.delete(id);
+            await deleteBoard(id);
             break;
           case "mediums":
-            await mediumAPI.delete(id);
+            await deleteMedium(id);
             break;
           case "classes":
-            await classAPI.delete(id);
+            await deleteClass(id);
             break;
           case "years":
-            await academicYearAPI.delete(id);
+            await deleteAcademicYear(id);
             break;
           case "books":
-            await bookAPI.delete(id);
+            await deleteBook(id);
             break;
         }
-        loadData();
       } catch (error) {
         console.error("Error deleting data:", error);
       }
